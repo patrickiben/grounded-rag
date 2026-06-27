@@ -1,0 +1,8 @@
+{
+  "questions": [
+    {"q": "What proportion of participants reported an adverse event?", "gold": "ae"},
+    {"q": "What was the mean terminal half-life?", "gold": "pk"},
+    {"q": "What dose levels were studied?", "gold": "dosing"},
+    {"q": "What were the age eligibility criteria?", "gold": "elig"}
+  ]
+}

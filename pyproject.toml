@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "grounded-rag"
+version = "0.1.0"
+description = "A tiny dependency-free RAG demo with a grounding evaluator that flags unsupported answers."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "Patrick Iben", email = "p.iben@saeny.net"}]
+keywords = ["rag", "retrieval", "llm", "grounding", "evaluation", "hallucination", "citations"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Intended Audience :: Science/Research",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.urls]
+Homepage = "https://github.com/YOUR-GITHUB/grounded-rag"
+
+[tool.setuptools]
+packages = ["groundedrag"]

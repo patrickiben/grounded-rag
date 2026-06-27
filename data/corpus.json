@@ -1,0 +1,24 @@
+{
+  "documents": [
+    {
+      "id": "elig",
+      "title": "Eligibility",
+      "text": "Healthy adult participants aged 18 to 55 years were eligible for enrollment. Key exclusion criteria included clinically significant cardiac disease and recent use of any investigational product."
+    },
+    {
+      "id": "dosing",
+      "title": "Dosing",
+      "text": "CP-101 was administered as a single oral dose in the fasted state. Dose levels of 10, 30, and 100 mg were evaluated in sequential ascending cohorts."
+    },
+    {
+      "id": "ae",
+      "title": "Adverse events",
+      "text": "In the safety population of 24 participants, 19 participants (79.2%) experienced at least one treatment-emergent adverse event. The most frequently reported preferred term was headache, in 6 participants (25.0%). No serious adverse events were reported."
+    },
+    {
+      "id": "pk",
+      "title": "Pharmacokinetics",
+      "text": "Following a single dose, maximum plasma concentration was reached at a median time of 1.5 hours. The mean terminal half-life was approximately 7.8 hours. Exposure increased in an approximately dose-proportional manner across the studied range."
+    }
+  ]
+}
