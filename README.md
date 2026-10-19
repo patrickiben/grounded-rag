@@ -2,10 +2,10 @@
 
 **A tiny, dependency-free RAG demo — with the part most RAG demos skip: an evaluator that checks whether the answer is actually supported by the retrieved sources.**
 
-![ci](https://github.com/YOUR-GITHUB/grounded-rag/actions/workflows/ci.yml/badge.svg)
+![ci](https://github.com/patrickiben/grounded-rag/actions/workflows/ci.yml/badge.svg)
 &nbsp;·&nbsp; Python ≥ 3.9 &nbsp;·&nbsp; zero runtime dependencies &nbsp;·&nbsp; MIT
 
-Retrieval-augmented generation is easy to demo and hard to trust: the model can still answer with something the sources don't say. `grounded-rag` shows the whole loop — retrieve → answer → **grounding evaluation** — and treats the evaluation as the main event. Every answer sentence is checked against the retrieved context: a sentence with **no lexical support** is flagged as an unsupported claim, and a **number that appears in no source** is flagged as a hallucination. It's the same grounding discipline as the companion [`numguard`](https://github.com/YOUR-GITHUB/numguard) project, applied to RAG answers.
+Retrieval-augmented generation is easy to demo and hard to trust: the model can still answer with something the sources don't say. `grounded-rag` shows the whole loop — retrieve → answer → **grounding evaluation** — and treats the evaluation as the main event. Every answer sentence is checked against the retrieved context: a sentence with **no lexical support** is flagged as an unsupported claim, and a **number that appears in no source** is flagged as a hallucination. It's the same grounding discipline as the companion [`numguard`](https://github.com/patrickiben/numguard) project, applied to RAG answers.
 
 ---
 
@@ -111,7 +111,7 @@ Run the tests with `pytest -q` (or just `python selftest.py`).
 - [ ] **LLM-backed answerer** (local model or API) with the grounding check unchanged
 - [ ] **Span-level citations** (point to the exact supporting sentence)
 - [ ] Richer grounding (negation/contradiction, units, date grounding)
-- [ ] Shared grounding core with [`numguard`](https://github.com/YOUR-GITHUB/numguard)
+- [ ] Shared grounding core with [`numguard`](https://github.com/patrickiben/numguard)
 
 ---
 

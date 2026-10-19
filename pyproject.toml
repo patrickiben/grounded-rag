@@ -21,7 +21,7 @@ classifiers = [
 dev = ["pytest>=7"]
 
 [project.urls]
-Homepage = "https://github.com/YOUR-GITHUB/grounded-rag"
+Homepage = "https://github.com/patrickiben/grounded-rag"
 
 [tool.setuptools]
 packages = ["groundedrag"]
