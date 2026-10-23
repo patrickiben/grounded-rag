@@ -3,10 +3,10 @@ from __future__ import annotations
 import re
 from typing import List
 
+from ._numeric import extract_numbers
+
 _WORD = re.compile(r"[A-Za-z0-9.]+")
 _SENT = re.compile(r"(?<=[.!?])\s+")
-# standalone numbers; lookbehind avoids matching digits inside identifiers (CP101)
-_NUM = re.compile(r"(?<![\w.])(\d+(?:,\d{3})*(?:\.\d+)?)")
 
 _STOP = {
     "the", "a", "an", "of", "in", "to", "and", "or", "was", "were", "is", "are",
@@ -31,10 +31,4 @@ def split_sentences(text: str) -> List[str]:
 
 
 def numbers(text: str) -> List[float]:
-    out: List[float] = []
-    for m in _NUM.finditer(text):
-        try:
-            out.append(float(m.group(1).replace(",", "")))
-        except ValueError:  # pragma: no cover
-            continue
-    return out
+    return [value for value, _, _ in extract_numbers(text)]

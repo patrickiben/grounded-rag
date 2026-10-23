@@ -1,11 +1,13 @@
 # grounded-rag
 
-**A tiny, dependency-free RAG demo — with the part most RAG demos skip: an evaluator that checks whether the answer is actually supported by the retrieved sources.**
+**A tiny, dependency-free RAG demo with numeric-membership and lexical screening, including explicit tests of its semantic blind spots.**
 
 ![ci](https://github.com/patrickiben/grounded-rag/actions/workflows/ci.yml/badge.svg)
 &nbsp;·&nbsp; Python ≥ 3.9 &nbsp;·&nbsp; zero runtime dependencies &nbsp;·&nbsp; MIT
 
-Retrieval-augmented generation is easy to demo and hard to trust: the model can still answer with something the sources don't say. `grounded-rag` shows the whole loop — retrieve → answer → **grounding evaluation** — and treats the evaluation as the main event. Every answer sentence is checked against the retrieved context: a sentence with **no lexical support** is flagged as an unsupported claim, and a **number that appears in no source** is flagged as a hallucination. It's the same grounding discipline as the companion [`numguard`](https://github.com/patrickiben/numguard) project, applied to RAG answers.
+The loop is retrieve → extractive answer → numeric and lexical screening. The evaluator flags low word overlap, recognized numbers missing from the retrieved context, and simple negation mismatches. It is a deterministic review aid, not an entailment model.
+
+> **Read this first:** passing lexical checks does not prove source support. Replacing “increased” with “decreased,” swapping units, or attaching a real number to a different claim can still pass. These limits are executable in `tests/test_screening.py`. The output says **PASSES LEXICAL CHECKS**; `.grounded` remains a compatibility alias for `.passes_lexical_checks`, with the same limited meaning. The negation heuristic can miss scope or flag benign differences; it is not a contradiction model. An empty answer fails with zero coverage. See [the numeric grammar and synchronization contract](NUMERIC_CONTRACT.md).
 
 ---
 
@@ -32,13 +34,13 @@ RETRIEVAL
 ========================================================================
 GROUNDING -- well-formed (extractive) answer
   answer: In the safety population of 24 participants, 19 participants (79.2%) ...
-  grounding: GROUNDED  (supported 2/2, coverage 100%)
-   - every answer sentence is supported by the sources.
+  grounding: PASSES LEXICAL CHECKS  (passing sentences 2/2, coverage 100%)
+   - every answer sentence passes numeric/lexical screening; semantic support is unverified.
 ========================================================================
 GROUNDING -- answer with injected hallucinations
   answer: ... The treatment was considered curative in most cases. Separately, 85% of participants discontinued.
-  grounding: NOT GROUNDED  (supported 2/4, coverage 50%)
-   - [ERROR] unsupported_claim: not supported by sources (support 20%): "The treatment was considered curative in most cases."
+  grounding: FAILS LEXICAL CHECKS  (passing sentences 2/4, coverage 50%)
+   - [ERROR] unsupported_claim: low lexical overlap (support 20%): "The treatment was considered curative in most cases."
    - [ERROR] ungrounded_number: number(s) 85 appear in no source: "Separately, 85% of participants discontinued."
 ========================================================================
 SELFTEST PASSED -- retrieval hits the gold docs; grounded answers pass; hallucinated content is flagged.
@@ -56,7 +58,7 @@ result = answer_question("What was the mean terminal half-life?", retriever, k=3
 
 print(result["answer"])            # "The mean terminal half-life was approximately 7.8 hours."
 print(result["citations"])         # ['pk']
-print(result["grounding"].grounded)  # True
+print(result["grounding"].passes_lexical_checks)  # True; not proof of entailment
 print(result["grounding"].scorecard())
 ```
 
@@ -75,8 +77,8 @@ Three small, swappable pieces:
 | Stage | Module | What it does |
 |-------|--------|--------------|
 | **Retrieve** | `retriever.py` | Dependency-free TF-IDF + cosine over the corpus. Reports `hit@k` / `MRR` against gold docs. The `query()` interface is minimal so a dense / embedding / vector-DB retriever drops in unchanged. |
-| **Answer** | `answerer.py` | An **extractive stand-in for an LLM** — returns the retrieved sentences most relevant to the query. Grounded by construction, so the demo runs with no API key. Swap in a real model and the grounding check still applies. |
-| **Evaluate grounding** | `grounding.py` | The point of the project. Each answer sentence must (a) share enough content words with some context sentence and (b) contain only numbers that appear in the context. Otherwise it's flagged `unsupported_claim` or `ungrounded_number`. |
+| **Answer** | `answerer.py` | An **extractive stand-in for an LLM** — returns the retrieved sentences most relevant to the query. Copied from retrieved text, so the demo runs with no API key. Swap in a real model and the grounding check still applies. |
+| **Evaluate grounding** | `grounding.py` | The point of the project. Each nonempty answer sentence must share enough content words with a source, contain recognized numbers present in the context, and avoid a simple negation mismatch with its closest source. Findings include `unsupported_claim`, `ungrounded_number`, `numeric_format`, `possible_contradiction`, and `empty_answer`. None establishes entailment. |
 
 Why "extractive answerer"? So the **valuable, differentiated part — the grounding evaluator and the retrieval metrics — is fully real and runs anywhere**, instead of hiding behind an API key. The honest framing matters: this demonstrates the *evaluation harness*, not a production generator.
 
@@ -101,7 +103,7 @@ grounded-rag/
 └── .github/workflows/ci.yml
 ```
 
-Run the tests with `pytest -q` (or just `python selftest.py`).
+Run `python -m pytest -q` (or just `python selftest.py`). CI checks Python 3.9, 3.12 and 3.14 and imports an installed wheel in an isolated environment. Invalid settings or malformed source numeric formats raise `ValueError`; malformed answer formats yield a failing report.
 
 ---
 
@@ -110,14 +112,14 @@ Run the tests with `pytest -q` (or just `python selftest.py`).
 - [ ] Pluggable **embedding / vector-DB retriever** behind the same interface
 - [ ] **LLM-backed answerer** (local model or API) with the grounding check unchanged
 - [ ] **Span-level citations** (point to the exact supporting sentence)
-- [ ] Richer grounding (negation/contradiction, units, date grounding)
-- [ ] Shared grounding core with [`numguard`](https://github.com/patrickiben/numguard)
+- [ ] Semantic entailment beyond the implemented simple negation heuristic; units and date grounding
+- [x] Shared vendored numeric contract with [`numguard`](https://github.com/patrickiben/numguard), including synchronized regression fixtures
 
 ---
 
 ## Status & honesty note
 
-A **working proof-of-concept** on a synthetic corpus, not a production RAG system. The retriever is lexical (not semantic) and the answerer is extractive (not generative) — both deliberately, so the grounding evaluator can be demonstrated with zero dependencies. The grounding evaluation itself is the contribution: a concrete, testable way to catch answers the sources don't support.
+A **working proof-of-concept** on a synthetic corpus, not a production RAG system. The retriever is lexical (not semantic) and the answerer is extractive (not generative) — both deliberately, so the grounding evaluator can be demonstrated with zero dependencies. The contribution is a small, testable lexical/numeric screen with a declared boundary: some unsupported answers will pass.
 
 ## License
 

@@ -79,7 +79,7 @@ def main() -> int:
 
     print("=" * 72)
     if ok:
-        print("SELFTEST PASSED -- retrieval hits the gold docs; grounded answers pass; "
+        print("SELFTEST PASSED -- retrieval hits the gold docs; source extracts pass lexical checks; "
               "hallucinated content is flagged.")
         return 0
     print("SELFTEST FAILED.")

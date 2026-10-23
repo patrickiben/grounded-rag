@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "grounded-rag"
 version = "0.1.0"
-description = "A tiny dependency-free RAG demo with a grounding evaluator that flags unsupported answers."
+description = "Dependency-free RAG demo with numeric and lexical screening, not semantic entailment."
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}

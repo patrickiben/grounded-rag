@@ -1,12 +1,8 @@
-"""grounded-rag -- a tiny, dependency-free RAG demo with a grounding evaluator.
+"""Dependency-free RAG demo with lexical and numeric screening.
 
-Retrieve over a corpus, answer extractively (a stand-in for an LLM), and -- the
-part most RAG demos skip -- *evaluate whether the answer is actually supported
-by the retrieved sources*: it flags answer sentences with no support and numbers
-that appear in no source. The grounding check is the same discipline as the
-companion ``numguard`` project, applied to retrieval-augmented answers.
-
-No third-party dependencies. Run ``python selftest.py``.
+Retrieve, extract source sentences, and screen numeric membership, word overlap
+and simple negation mismatch. A passing verdict does not establish semantic
+entailment; explicit known-gap tests preserve that distinction.
 """
 from .answerer import extractive_answer
 from .corpus import Document, load_corpus
